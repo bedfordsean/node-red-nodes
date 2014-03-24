@@ -67,7 +67,9 @@ Copyright 2013 IBM Corp. under [the Apache 2.0 license](LICENSE).
 
 **79-sensorTag** - Reads data from the Ti BLE SensorTag device.
 
-**100-heatmiser** - Read/writes Heatmiser thermostats. Allows for setting of temperature and frost protection modes.
+**100-heatmiser-in** - Writes settings for temperature and frost protection to Heatmiser thermostats.
+
+**101-heatmiser-out** - Reads settings from Heatmiser thermostats at a polling interval.
 
 **101-scanBLE** - Scans for a particular Bluetooth Low Energy (BLE) device.
 
