@@ -27,7 +27,6 @@ function HeatmiserInputNode(n) {
     this.pin = n.pin || "1234";
     this.multiWriteFunc = undefined;
     hminnode = this;
-
     this.pollIntervalRef = undefined;
 
     this.hm = new Heatmiser(this.ip, this.pin);
@@ -58,16 +57,16 @@ function HeatmiserInputNode(n) {
 		}
 	});
 
+	this.read = function() {
+		if (hminnode.hm) {
+			hminnode.hm.read_device();
+		}
+	};
+
 	if (!this.currentStatus) {
 		this.read();
 		this.pollIntervalRef = setInterval(this.read, 30*60*1000);
 	}
-
-	this.read = function() {
-		if (hmoutnode.hm) {
-			hmoutnode.hm.read_device();
-		}
-	};
 
 	this.write = function(dcb) {
         if (hminnode.hm) {
