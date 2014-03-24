@@ -28,6 +28,8 @@ function HeatmiserInputNode(n) {
     this.multiWriteFunc = undefined;
     hminnode = this;
 
+    this.pollIntervalRef = undefined;
+
     this.hm = new Heatmiser(this.ip, this.pin);
 
     this.hm.on('success', function(data) {
@@ -48,6 +50,24 @@ function HeatmiserInputNode(n) {
 		}
 		hminnode.send(data);
 	});
+
+	this.on("close", function() {
+		if (this.pollIntervalRef) {
+			clearInterval(this.pollIntervalRef);
+			this.pollIntervalRef = undefined;
+		}
+	});
+
+	if (!this.currentStatus) {
+		this.read();
+		this.pollIntervalRef = setInterval(this.read, 30*60*1000);
+	}
+
+	this.read = function() {
+		if (hmoutnode.hm) {
+			hmoutnode.hm.read_device();
+		}
+	};
 
 	this.write = function(dcb) {
         if (hminnode.hm) {
@@ -148,7 +168,10 @@ function HeatmiserInputNode(n) {
     this.on("input", function(message) {
 		// Valid inputs are heating:{target:, hold:}, read:, runmode:frost/heating, holiday:{enabled:, time:}, hotwater:{'on':1/0 / 'boost':1/0}
 		if (message.payload) {
-			// Compare message.payload data to confirm valid and send to thermostat
+			if (typeof(message.payload) === "string") {
+				message.payload = JSON.parse(message.payload);
+			}
+ 			// Compare message.payload data to confirm valid and send to thermostat
 			var validInputs = ["heating", "runmode"];
 			for (var key in message.payload) {
 				if (message.payload.hasOwnProperty(key)) {
